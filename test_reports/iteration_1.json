@@ -1,0 +1,43 @@
+{
+  "summary": "Comprehensive frontend-only testing of RF Canvas (Expo web preview at 390x844). Overwhelming majority of features work end-to-end: Home, quick-create (Instagram/Thumbnail/Drawing/Video), Templates preview + use, Editor (Add panel: heading/rectangle/star/qr-code with prompt/chart; Layers tab with layer rows; Edit, Arrange, Page tabs; undo/redo; back-button navigation), Projects tab (card render, autosave persistence, long-press action sheet with Open/Rename/Duplicate/Favourite/Folder/Tags/Archive/Trash), Export, Doctor (design score + fix buttons + integrity card), History (snapshot/experiment/version-chip), Checklist, Palette (all cmd testIDs incl palette-cmd-resize), Brand, Factory (variations/report/sheet/stationery/CSV), Settings theme light↔dark, Registry, Device, AI, Exports, Image-Lab, Legal, Draw (/draw/[id] with colour swatches), Video (/video/[id] with timeline + aspect + title + export-edl). Confirm-sheet, prompt-input, confirm-ok-button, toast primitives all behave correctly. Critical blocker: /assets route is unreachable because Metro bundler intercepts /assets as a static asset path and returns 500 'Could not extract asset path from URL'. Deprecated expo-router API warning (expo-router/unstable-native-tabs) emitted on every page load.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "/assets route", "issue": "Entire Assets screen is unreachable in web preview. Navigating to /assets causes Metro bundler to try to resolve it as a static asset and return HTTP 500 with 'Error: Could not extract asset path from URL'. Reference: /app/frontend/app/assets.tsx (route name collides with /app/frontend/assets/ static dir). Rename route to e.g. /asset-library or /library and update all router.push/replace callers.", "testID": "assets-screen (never rendered)", "priority": "CRITICAL"},
+      {"component": "Editor Add panel toggle", "issue": "Clicking editor-tab-add while the Add panel is already open closes it. If a shape was just added the panel stays open, so re-clicking tab-add before adding another shape hides all add-* buttons. Minor UX concern; tests must not re-click tab-add between consecutive shape adds. Reference: /app/frontend/src/editor/Panels.tsx AddPanel/tab toggle logic.", "testID": "editor-tab-add", "priority": "LOW"},
+      {"component": "SVG negative dimensions", "issue": "Console errors: '<svg> attribute width: A negative value is not valid. (\"-15\")' and same for height, emitted while rendering a shape (likely star/polygon or empty bbox clip). Reference: /app/frontend/src/engine/render.ts.", "testID": "editor-canvas", "priority": "LOW"},
+      {"component": "editor-tab-page naming", "issue": "Review request references testID 'editor-tab-pages' but actual testID is singular 'editor-tab-page'. Pages panel itself works correctly (page-add, page-numbers, resize-* chips present). Reference: /app/frontend/app/editor/[id].tsx tab definitions.", "testID": "editor-tab-page", "priority": "INFO"}
+    ],
+    "integration_issues": [
+      {"flow": "Project autosave + Projects tab", "issue": "Verified working: creating via quick-create persists project; it appears in /projects with thumbnail; long-press opens project-action-sheet.", "affected_testIDs": ["quick-create-instagram-post", "project-card-*", "project-action-sheet"]},
+      {"flow": "Command palette resize", "issue": "palette-cmd-resize requires palette-input to already contain 'resize WxH' AND a project context. Opening /palette directly from Home shows 'No project open' guard - correct behavior; must enter palette while a project is active (link from editor passes ?project=id).", "affected_testIDs": ["palette-input", "palette-cmd-resize", "confirm-sheet", "confirm-ok-button"]}
+    ],
+    "design_issues": [
+      {"screen": "Home", "issues": ["Touch targets look >=44px; 8pt grid respected; brand colour #FF5E00 used consistently."]},
+      {"screen": "Editor", "issues": ["Right side vertical tool strip near canvas uses small icons; tap targets borderline but adequate at ~44px. Zoom chip readable."]}
+    ],
+    "react_native_issues": [
+      {"component": "expo-router unstable-native-tabs", "issue": "Deprecated API in use. Console warns on every page load: '`expo-router/unstable-native-tabs` is deprecated. Use `expo-router/native-tabs` instead.' Reference: /app/frontend/app/(tabs)/_layout.tsx."}
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_1.json"],
+  "action_items": [
+    "CRITICAL: Rename /assets route (e.g. move /app/frontend/app/assets.tsx to /app/frontend/app/asset-library.tsx) and update any router.push/replace and settings-registry/palette-cmd references so Assets screen becomes reachable in web preview. The current /assets URL collides with Metro's /assets static asset handler and returns 500.",
+    "Migrate from `expo-router/unstable-native-tabs` to `expo-router/native-tabs` in /app/frontend/app/(tabs)/_layout.tsx to clear deprecation warning.",
+    "Investigate SVG negative width/height warnings in render.ts (clamp bbox to >=0 before emitting <svg width/height>).",
+    "Decide whether editor-tab-add should always open (idempotent) rather than toggle, to improve robustness of automation and keyboard flows.",
+    "If this matters for docs/tests, align the testID 'editor-tab-page' vs the review-request label 'editor-tab-pages' (currently singular in code)."
+  ],
+  "critical_code_review_comments": [
+    "Route name collision risk: Expo Router files inside /app/frontend/app/ should not share names with top-level static dirs (assets/). Prefer /library, /vault, or /asset-manager.",
+    "ArrangePanel correctly short-circuits with a muted hint when no selection; good UX, but automation tests must select a layer first.",
+    "render.ts should clamp any computed width/height to Math.max(0, …) before passing to SVG primitives to avoid DOM warnings on web."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (no backend)", "frontend": "~92% (26/28 reviewed flows pass; Assets route and QR when tab is re-toggled are the only functional misses)"},
+  "seed_data_creation": "Created ephemeral projects via quick-create and template-use during tests (stored in browser localStorage of the preview session only).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Expo web preview at https://rf-creative.preview.emergentagent.com, viewport 390x844. All data via localStorage - fresh session = no projects. Prompt is in-app confirm sheet (testID confirm-sheet, prompt-input, confirm-ok-button) not native alert. Native-only features (camera, native file picker, PDF file write, view-shot capture) cannot be exercised on web. Key failing area to re-check after fix: /assets route must render asset-library UI (library/duplicates/dependencies/licences tabs).",
+  "rca_of_issue": "/assets 500 error: Metro's dev server registers an /assets/* middleware to serve bundled static assets (fonts, images). When Expo Router hits /assets as a route path, the request matches Metro's asset middleware first, which attempts to parse an asset descriptor from the URL, fails, and returns 500 with 'Could not extract asset path from URL'. Reproduction: open https://rf-creative.preview.emergentagent.com/assets directly. Mitigation: rename the Expo Router file (app/assets.tsx → app/asset-library.tsx) and update any navigation callers (palette-cmd-dups, palette-cmd-deps route to /assets?tab=duplicates/dependencies — grep showed references in /app/frontend/app/palette.tsx and /app/frontend/app/(tabs)/studios.tsx)."
+}

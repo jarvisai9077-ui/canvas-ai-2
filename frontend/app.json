@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "RF Canvas",
+    "slug": "rf-canvas",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "rfcanvas",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.emergent.rfcreative.uicbjl",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Capture photos and videos for your designs",
+        "NSPhotoLibraryUsageDescription": "Place your photos into designs and edits",
+        "NSMicrophoneUsageDescription": "Record sound with videos for your projects"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FF5E00"
+      },
+      "package": "com.emergent.rfcreative.uicbjl",
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-image.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      ],
+      "expo-font",
+      "expo-image",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-status-bar",
+      "expo-sharing",
+      "@react-native-vector-icons/ionicons",
+      "expo-video",
+      "expo-image-picker",
+      "expo-document-picker"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
