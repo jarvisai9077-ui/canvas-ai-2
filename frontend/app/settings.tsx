@@ -1,7 +1,7 @@
 import * as FS from "expo-file-system/legacy";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Platform, ScrollView, Switch, View } from "react-native";
+import { Linking, Platform, ScrollView, Switch, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Card, Chip, ChipRow, Header, Row, Section, T } from "@/src/components/ui";
 import { exportDir, share } from "@/src/engine/exporter";
@@ -42,6 +42,7 @@ export default function Settings() {
             <Row icon="list" title="Feature registry" subtitle="What works today and what is planned" onPress={() => router.push("/registry")} testID="settings-registry" />
             <Row icon="shield-checkmark" title="Privacy Policy" onPress={() => router.push("/legal/privacy")} testID="settings-privacy" />
             <Row icon="document-lock" title="Terms & Conditions" onPress={() => router.push("/legal/terms")} testID="settings-terms" />
+            <Row icon="mail" title="Contact support" subtitle="jarvisai9077@gmail.com" onPress={() => Linking.openURL("mailto:jarvisai9077@gmail.com?subject=RF%20Canvas%20support").catch(() => toast("No email app found. Write to jarvisai9077@gmail.com", "error"))} testID="settings-support" />
           </Card>
           <T v="muted" style={{ padding: spacing.md }}>RF Canvas 1.0 · Works fully offline · No account, ads or tracking.</T>
         </Section>

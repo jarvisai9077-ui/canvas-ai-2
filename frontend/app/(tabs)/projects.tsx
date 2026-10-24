@@ -28,6 +28,7 @@ export default function Projects() {
   const act = async (k: string) => {
     const p = menu!; setMenu(null);
     if (k === "open") router.push(projectRoute(p));
+    if (k === "share") router.push(p.kind === "video" ? projectRoute(p) : (`/export/${p.id}` as any));
     if (k === "rename") { const n = await promptText("Rename project", p.name); if (n?.trim()) saveProject({ ...p, name: n.trim() }); }
     if (k === "dup") { duplicateProject(p); toast("Project duplicated", "success"); }
     if (k === "fav") saveProject({ ...p, favorite: !p.favorite }, { touch: false });
@@ -62,7 +63,7 @@ export default function Projects() {
         <Pressable style={{ flex: 1, backgroundColor: colors.overlay, justifyContent: "flex-end" }} onPress={() => setMenu(null)}>
           <View style={{ backgroundColor: colors.surfaceSecondary, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, paddingTop: 12, paddingBottom: insets.bottom + 12 }} testID="project-action-sheet">
             <T v="h3" style={{ paddingHorizontal: spacing.md, paddingBottom: 6 }}>{menu?.name}</T>
-            {(menu?.trashed ? [["restore", "Restore", "arrow-undo"], ["delete", "Delete forever", "trash"]] : [["open", "Open", "open"], ["rename", "Rename", "create"], ["dup", "Duplicate", "copy"], ["fav", menu?.favorite ? "Remove favourite" : "Favourite", "heart"], ["folder", "Move to folder", "folder"], ["tags", "Edit tags", "pricetags"], ["archive", menu?.archived ? "Unarchive" : "Archive", "archive"], ["trash", "Move to Trash", "trash"]]).map(([k, l, i]) => (
+            {(menu?.trashed ? [["restore", "Restore", "arrow-undo"], ["delete", "Delete forever", "trash"]] : [["open", "Open", "open"], ["share", "Save & share (export)", "share-social"], ["rename", "Rename", "create"], ["dup", "Duplicate", "copy"], ["fav", menu?.favorite ? "Remove favourite" : "Favourite", "heart"], ["folder", "Move to folder", "folder"], ["tags", "Edit tags", "pricetags"], ["archive", menu?.archived ? "Unarchive" : "Archive", "archive"], ["trash", "Move to Trash", "trash"]]).map(([k, l, i]) => (
               <Row key={k} icon={i as any} title={l} onPress={() => act(k)} testID={`project-action-${k}`} right={<View />} />
             ))}
           </View>

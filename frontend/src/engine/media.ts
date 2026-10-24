@@ -56,8 +56,10 @@ async function handlePicker(res: ImagePicker.ImagePickerResult, kind: "image" | 
 
 export async function pickFromGallery(kind: "image" | "video" = "image", multiple = true) {
   // Android Photo Picker / iOS PHPicker: no broad storage permission needed.
-  const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: [kind === "image" ? "images" : "videos"], allowsMultipleSelection: multiple, quality: 1, exif: false });
-  return handlePicker(res, kind);
+  try {
+    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: [kind === "image" ? "images" : "videos"], allowsMultipleSelection: multiple, quality: 1, exif: false });
+    return await handlePicker(res, kind);
+  } catch (e: any) { toast(e?.message ? `Import failed: ${e.message}` : "Could not open your gallery", "error"); return []; }
 }
 
 export async function captureWithCamera(kind: "image" | "video" = "image") {
@@ -75,12 +77,15 @@ export async function captureWithCamera(kind: "image" | "video" = "image") {
       return [];
     }
   }
-  const res = await ImagePicker.launchCameraAsync({ mediaTypes: [kind === "image" ? "images" : "videos"], quality: 1 });
-  return handlePicker(res, kind);
+  try {
+    const res = await ImagePicker.launchCameraAsync({ mediaTypes: [kind === "image" ? "images" : "videos"], quality: 1 });
+    return await handlePicker(res, kind);
+  } catch (e: any) { toast(e?.message ? `Camera failed: ${e.message}` : "Could not open the camera", "error"); return []; }
 }
 
 export async function pickFiles(type: string | string[] = "*/*") {
-  const res = await DocumentPicker.getDocumentAsync({ type, multiple: true, copyToCacheDirectory: true });
+  let res: DocumentPicker.DocumentPickerResult;
+  try { res = await DocumentPicker.getDocumentAsync({ type, multiple: true, copyToCacheDirectory: true }); } catch { toast("Could not open the file picker", "error"); return []; }
   if (res.canceled) return [];
   const out: Omit<Asset, "id" | "createdAt" | "tags" | "license">[] = [];
   for (const a of res.assets) {
@@ -93,12 +98,15 @@ export async function pickFiles(type: string | string[] = "*/*") {
 
 // Reads a picked text file (CSV / JSON / SVG) without registering it as an asset.
 export async function pickTextFile(types: string[]): Promise<{ name: string; text: string } | null> {
-  const res = await DocumentPicker.getDocumentAsync({ type: types, copyToCacheDirectory: true });
-  if (res.canceled) return null;
-  const a = res.assets[0];
-  if ((a.size ?? 0) > 20 * 1024 * 1024) { toast("File is larger than 20 MB", "error"); return null; }
-  const text = isWeb ? await (await fetch(a.uri)).text() : await FS.readAsStringAsync(a.uri);
-  return { name: a.name, text };
+  try {
+    const res = await DocumentPicker.getDocumentAsync({ type: types, copyToCacheDirectory: true });
+    if (res.canceled) return null;
+    const a = res.assets[0];
+    if ((a.size ?? 0) > 20 * 1024 * 1024) { toast("File is larger than 20 MB", "error"); return null; }
+    const text = isWeb ? await (await fetch(a.uri)).text() : await FS.readAsStringAsync(a.uri);
+    if (!text.trim()) { toast("The file is empty", "error"); return null; }
+    return { name: a.name, text };
+  } catch { toast("Could not read that file. Is it a text, CSV, JSON or SVG file?", "error"); return null; }
 }
 
 export { hashFile };

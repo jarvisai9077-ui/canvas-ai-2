@@ -8,7 +8,7 @@ import type { Layer, Page } from "./types";
 const esc = (s: string) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const n = (v: number) => (Number.isFinite(v) ? Math.round(v * 100) / 100 : 0);
 
-export interface RenderOpts { annotations?: boolean; cvdMode?: string | null; bleed?: number; cropMarks?: boolean; imageMap?: Record<string, string>; hideIds?: string[]; cutLines?: boolean }
+export interface RenderOpts { annotations?: boolean; cvdMode?: string | null; bleed?: number; cropMarks?: boolean; imageMap?: Record<string, string>; hideIds?: string[]; cutLines?: boolean; fontCSS?: string }
 
 const qrCache: Record<string, { size: number; d: string }> = {};
 export function qrPath(value: string) {
@@ -176,5 +176,5 @@ export function pageToSVG(page: Page, W: number, H: number, o: RenderOpts = {}):
       marks += `<line x1="${x + dx * 4}" y1="${y}" x2="${x + dx * L}" y2="${y}" ${st}/><line x1="${x}" y1="${y + dy * 4}" x2="${x}" y2="${y + dy * L}" ${st}/>`;
     }
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W + 2 * b}" height="${H + 2 * b}" viewBox="${-b} ${-b} ${W + 2 * b} ${H + 2 * b}"><defs>${defs.join("")}</defs>${body}${marks}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W + 2 * b}" height="${H + 2 * b}" viewBox="${-b} ${-b} ${W + 2 * b} ${H + 2 * b}"><defs>${o.fontCSS ? `<style>${o.fontCSS}</style>` : ""}${defs.join("")}</defs>${body}${marks}</svg>`;
 }

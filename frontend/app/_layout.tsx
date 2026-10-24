@@ -8,11 +8,21 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import { ErrorBoundary } from "@/src/components/error-boundary";
 import { RootOverlays } from "@/src/components/ui";
-import { initStore } from "@/src/engine/store";
+import { initStore, toast } from "@/src/engine/store";
 import { queryClient } from "@/src/query-client";
 import { useTheme } from "@/src/theme";
 
 LogBox.ignoreAllLogs(true);
+
+// Non-fatal JS errors become a friendly toast instead of a crash; fatal ones go to the ErrorBoundary/default handler.
+const EU = (globalThis as any).ErrorUtils;
+if (EU?.setGlobalHandler) {
+  const prev = EU.getGlobalHandler?.();
+  EU.setGlobalHandler((e: any, fatal?: boolean) => { if (!fatal) { toast(e?.message ? `Something went wrong: ${e.message}` : "Something went wrong", "error"); return; } prev?.(e, fatal); });
+}
+if (typeof window !== "undefined" && (window as any).addEventListener) {
+  (window as any).addEventListener("unhandledrejection", (ev: any) => { toast(ev?.reason?.message ?? "An action failed", "error"); ev?.preventDefault?.(); });
+}
 
 export default function RootLayout() {
   const [loaded] = useFonts({

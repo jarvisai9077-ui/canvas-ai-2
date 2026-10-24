@@ -5,7 +5,11 @@ import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
 import { captureRef } from "react-native-view-shot";
 import { storage } from "@/src/utils/storage";
+import * as MediaLibrary from "expo-media-library";
+import { Linking } from "react-native";
+import { fontCSS, toDataURL } from "./fonts";
 import { pageToSVG, RenderOpts } from "./render";
+import { confirmAsk } from "./store";
 import type { Page, Project } from "./types";
 
 export type Format = "png" | "jpg" | "svg" | "pdf" | "json" | "csv" | "txt";
@@ -63,23 +67,23 @@ export async function writeText(p: Project, content: string, format: Format, nam
 // Embed local images as data URIs so SVG/PDF files are self-contained.
 export async function imageMapFor(pages: Page[]) {
   const map: Record<string, string> = {};
-  if (isWeb) return map;
-  for (const pg of pages) for (const l of pg.layers) if (l.type === "image" && l.uri && !map[l.uri] && l.uri.startsWith("file:")) {
-    try { const b = await FS.readAsStringAsync(l.uri, { encoding: FS.EncodingType.Base64 }); map[l.uri] = `data:image/${l.uri.toLowerCase().endsWith(".png") ? "png" : "jpeg"};base64,${b}`; } catch { /* missing asset reported by validator */ }
+  for (const pg of pages) for (const l of pg.layers) if (l.type === "image" && l.uri && !map[l.uri]) {
+    const d = await toDataURL(l.uri); if (d) map[l.uri] = d; // missing assets are reported by Design Doctor
   }
   return map;
 }
 
 export async function exportSVG(p: Project, pageIndex: number, tpl: string, opts: RenderOpts = {}) {
   const pg = p.pages[pageIndex]; const imageMap = await imageMapFor([pg]);
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>\n` + pageToSVG(pg, p.width, p.height, { ...opts, imageMap });
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>\n` + pageToSVG(pg, p.width, p.height, { ...opts, imageMap, fontCSS: await fontCSS([pg]) });
   return writeText(p, svg, "svg", fileName(tpl, p, "svg", { page: pageIndex + 1 }));
 }
 
 export async function exportRaster(p: Project, pageIndex: number, viewRef: any, format: "png" | "jpg", scale: number, quality: number, tpl: string): Promise<ExportResult> {
   const w = Math.round(p.width * scale), h = Math.round(p.height * scale); const name = fileName(tpl, p, format, { w, h, page: pageIndex + 1 });
   if (isWeb) {
-    const svg = pageToSVG(p.pages[pageIndex], p.width, p.height);
+    const pg = p.pages[pageIndex];
+    const svg = pageToSVG(pg, p.width, p.height, { imageMap: await imageMapFor([pg]), fontCSS: await fontCSS([pg]) });
     const data: string = await new Promise((res, rej) => {
       const img = new (globalThis as any).Image(); img.onload = () => {
         const c = (globalThis as any).document.createElement("canvas"); c.width = w; c.height = h; const ctx = c.getContext("2d");
@@ -91,6 +95,7 @@ export async function exportRaster(p: Project, pageIndex: number, viewRef: any, 
     webDownload(data, name, ""); return finish(p, { uri: data, name, format, width: w, height: h, ...(await validateFile(data, format)) });
   }
   await ensureDir();
+  if (!viewRef?.current) throw new Error("Renderer not ready, try again");
   const tmp = await captureRef(viewRef, { format, quality, width: w, height: h, result: "tmpfile" });
   const uri = exportDir() + name; await FS.moveAsync({ from: tmp, to: uri });
   return finish(p, { uri, name, format, width: w, height: h, ...(await validateFile(uri, format)) });
@@ -98,10 +103,10 @@ export async function exportRaster(p: Project, pageIndex: number, viewRef: any, 
 
 export async function exportPDF(p: Project, tpl: string, o: { bleedPx?: number; cropMarks?: boolean; pages?: number[]; nUp?: number; annotations?: boolean } = {}): Promise<ExportResult> {
   const pages = (o.pages ?? p.pages.map((_, i) => i)).map((i) => p.pages[i]);
-  const imageMap = await imageMapFor(pages); const b = o.bleedPx ?? 0;
+  const imageMap = await imageMapFor(pages); const b = o.bleedPx ?? 0; const css = await fontCSS(pages);
   const ptW = ((p.width + 2 * b) / (p.dpi || 72)) * 72, ptH = ((p.height + 2 * b) / (p.dpi || 72)) * 72;
   const body = pages.map((pg) => `<div class="pg">${pageToSVG(pg, p.width, p.height, { imageMap, bleed: b, cropMarks: o.cropMarks, annotations: o.annotations }).replace("<svg ", '<svg style="width:100%;height:100%" ')}</div>`).join("");
-  const html = `<html><head><style>@page{size:${ptW}pt ${ptH}pt;margin:0}body{margin:0}.pg{width:${ptW}pt;height:${ptH}pt;page-break-after:always;overflow:hidden}</style></head><body>${body}</body></html>`;
+  const html = `<html><head><style>${css}@page{size:${ptW}pt ${ptH}pt;margin:0}body{margin:0}.pg{width:${ptW}pt;height:${ptH}pt;page-break-after:always;overflow:hidden}</style></head><body>${body}</body></html>`;
   const name = fileName(tpl, p, "pdf");
   if (isWeb) { await Print.printAsync({ html }); return finish(p, { uri: "print-dialog", name, format: "pdf", size: html.length, valid: true, message: "Sent to the browser print dialog (choose “Save as PDF”)" }); }
   await ensureDir();
@@ -132,4 +137,19 @@ export async function dirSize(dir: string | null) {
     }
   } catch { /* unreadable dir */ }
   return total;
+}
+
+// Save a validated PNG/JPEG into the phone's Photos/Gallery (asks permission in context).
+export async function saveToPhotos(uri: string): Promise<boolean> {
+  if (isWeb) return false;
+  let perm = await MediaLibrary.getPermissionsAsync(true);
+  if (!perm.granted && perm.canAskAgain) {
+    if (!(await confirmAsk({ title: "Save to your gallery", message: "Allow RF Canvas to add exported images to your Photos so you can share them anywhere.", confirmLabel: "Continue" }))) return false;
+    perm = await MediaLibrary.requestPermissionsAsync(true);
+  }
+  if (!perm.granted) {
+    if (await confirmAsk({ title: "Gallery access is off", message: "You can still share the file. To save to Photos, enable access in Settings.", confirmLabel: "Open Settings" })) Linking.openSettings();
+    return false;
+  }
+  await MediaLibrary.saveToLibraryAsync(uri); return true;
 }

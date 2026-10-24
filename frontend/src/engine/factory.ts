@@ -80,8 +80,60 @@ export const templates: TB[] = [
   { id: "t-board", name: "Moodboard", category: "Boards", w: 2400, h: 1600, kind: "board", pages: () => [newPage("Board", "#F5F6F8", [T("Moodboard", 80, 60, 1200, 90, "#1C1C1E", { fontFamily: bold }), newLayer("note", { x: 80, y: 220, w: 500, h: 300, text: "Warm, optimistic, tactile" }), ...["#FF5E00", "#FFF0E6", "#1C1C1E", "#FFB300"].map((c, i) => R(700 + i * 260, 220, 220, 220, c, { radius: 30, name: c }))])] },
   { id: "t-calendar", name: "Monthly Calendar", category: "Digital Products", w: 1754, h: 1240, pages: () => [newPage("Calendar", "#FFFFFF", [T("June 2026", 80, 60, 1200, 90, "#FF5E00", { fontFamily: bold }), newLayer("table", { x: 80, y: 220, w: 1594, h: 940, fontSize: 30, rows: [["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], ["1", "2", "3", "4", "5", "6", "7"], ["8", "9", "10", "11", "12", "13", "14"], ["15", "16", "17", "18", "19", "20", "21"], ["22", "23", "24", "25", "26", "27", "28"], ["29", "30", "", "", "", "", ""]] })])] },
 ];
-export const templateCategories = Array.from(new Set(templates.map((t) => t.category)));
 
 export function projectFromTemplate(t: TB): Project {
   return newProject({ name: t.name, kind: t.kind ?? "design", width: t.w, height: t.h, category: t.category, pages: t.pages() });
 }
+
+// ---------------- Generated original template library (fills the bundled library to exactly 999) ----------------
+export const TEMPLATE_COUNT = 999;
+type Pal = { name: string; bg: string; pri: string; txt: string; acc: string; sub: string };
+const pals: Pal[] = [
+  { name: "Ember", bg: "#FFF0E6", pri: "#FF5E00", txt: "#1C1C1E", acc: "#FFD8C2", sub: "#3A3A3C" },
+  { name: "Night", bg: "#1C1C1E", pri: "#FF6600", txt: "#FFFFFF", acc: "#3A3A3C", sub: "#C7C7CC" },
+  { name: "Ocean", bg: "#E8F1FB", pri: "#1E88E5", txt: "#0D2238", acc: "#BBDEFB", sub: "#3F5873" },
+  { name: "Forest", bg: "#EEF6EE", pri: "#2E7D32", txt: "#13281A", acc: "#C8E6C9", sub: "#45604B" },
+  { name: "Berry", bg: "#FCEAF1", pri: "#D81B60", txt: "#2E0E1B", acc: "#F8BBD0", sub: "#6A3A4C" },
+  { name: "Royal", bg: "#14143A", pri: "#FFB300", txt: "#FFFFFF", acc: "#2A2A66", sub: "#C9C9E8" },
+  { name: "Sand", bg: "#F6EFE4", pri: "#8D6E63", txt: "#2B211C", acc: "#E6D5C0", sub: "#5D4E45" },
+  { name: "Mint", bg: "#E6FAF5", pri: "#00897B", txt: "#0C2B27", acc: "#B2EBE2", sub: "#3C5E58" },
+  { name: "Mono", bg: "#FFFFFF", pri: "#1C1C1E", txt: "#1C1C1E", acc: "#ECEDF1", sub: "#8E8E93" },
+  { name: "Sunset", bg: "#2B0F1E", pri: "#FF7043", txt: "#FFF3E0", acc: "#5A1E36", sub: "#F3C9B6" },
+  { name: "Lemon", bg: "#FFFBE0", pri: "#F9A825", txt: "#2A2400", acc: "#FFF59D", sub: "#5E5626" },
+  { name: "Grape", bg: "#F1E9FB", pri: "#6A1B9A", txt: "#1F0B2E", acc: "#E1BEE7", sub: "#55406A" },
+];
+type Copy = [string, string, string];
+const cats: { cat: string; name: string; w: number; h: number; kind?: ProjectKind; copy: Copy[] }[] = [
+  { cat: "Social", name: "Instagram Post", w: 1080, h: 1080, copy: [["New Collection", "Fresh styles just landed", "Shop now"], ["Weekend Sale", "Up to 40% off everything", "Grab yours"], ["Coffee Hour", "Two-for-one lattes, 3–5pm", "Visit us"]] },
+  { cat: "Social", name: "Story", w: 1080, h: 1920, copy: [["Swipe Up", "Our biggest launch this year", "Learn more"], ["Behind the Scenes", "How we make every piece", "Watch now"], ["Daily Tip", "Small habits, big results", "Save this"]] },
+  { cat: "YouTube", name: "YouTube Thumbnail", w: 1280, h: 720, copy: [["I Tried It", "30 days later…", "WATCH"], ["Top 5 Tips", "Beginner friendly", "NEW"], ["Full Review", "Worth the hype?", "EP 12"]] },
+  { cat: "Social", name: "Facebook Cover", w: 1640, h: 624, copy: [["Studio North", "Design · Brand · Content", "Say hello"], ["Green Market", "Local produce every Saturday", "Join us"], ["Fit Club", "Train together, grow together", "Sign up"]] },
+  { cat: "Posters", name: "Poster", w: 2480, h: 3508, copy: [["Summer Festival", "Music · Food · Art", "June 21"], ["Open Studio", "Meet the makers", "Free entry"], ["Film Night", "Under the stars", "8 PM"]] },
+  { cat: "Posters", name: "Flyer", w: 1748, h: 2480, copy: [["Yoga Classes", "Every morning at 7", "Book a spot"], ["Grand Opening", "Join the celebration", "This Friday"], ["Tutoring", "Maths & science help", "Call today"]] },
+  { cat: "Business", name: "Business Card", w: 1004, h: 650, copy: [["Jordan Lee", "Product Designer", "hello@jordan.studio"], ["Priya Shah", "Architect", "+1 555 0142"], ["Sam Ortiz", "Photographer", "sam.photo"]] },
+  { cat: "Presentations", name: "Slide", w: 1920, h: 1080, kind: "presentation", copy: [["Quarterly Review", "Results and next steps", "Q2 2026"], ["Product Vision", "Where we are heading", "Roadmap"], ["Team Update", "Wins, learnings, goals", "All hands"]] },
+  { cat: "Social", name: "Pinterest Pin", w: 1000, h: 1500, copy: [["Easy Recipes", "Ready in 15 minutes", "Save idea"], ["Home Refresh", "10 budget makeovers", "See more"], ["Travel List", "Hidden gems in Lisbon", "Explore"]] },
+  { cat: "Social", name: "LinkedIn Banner", w: 1584, h: 396, copy: [["Building Better Products", "Design lead · Speaker", "Let's connect"], ["Data & Strategy", "Helping teams decide faster", "Portfolio"], ["Hiring Now", "Join our design team", "Apply"]] },
+  { cat: "Events", name: "Invitation", w: 1500, h: 2100, copy: [["You're Invited", "Celebrate with us", "Saturday 7 PM"], ["Birthday Party", "Cake, games and music", "RSVP soon"], ["Baby Shower", "Join us for brunch", "Sunday 11 AM"]] },
+  { cat: "Menus", name: "Menu", w: 1240, h: 1754, kind: "document", copy: [["Today's Menu", "Soup · Salad · Pasta · Dessert", "Chef's picks"], ["Brunch", "Pancakes · Eggs · Juices", "9–2 daily"], ["Bar List", "Spritz · Mojito · Negroni", "Happy hour"]] },
+];
+type LayoutFn = (W: number, H: number, p: Pal, c: Copy) => Layer[];
+const L = (W: number, H: number) => Math.min(W, H);
+const hl = (W: number, H: number, len: number) => Math.round(Math.min(L(W, H) * 0.13, (W * 0.84) / Math.max(4, len * 0.56)));
+const layouts: [string, LayoutFn][] = [
+  ["Split", (W, H, p, c) => [R(0, 0, W, H * 0.48, p.pri), T(c[0], W * 0.08, H * 0.56, W * 0.84, hl(W, H, c[0].length), p.txt, { fontFamily: bold }), T(c[1], W * 0.08, H * 0.56 + hl(W, H, c[0].length) * 1.5, W * 0.84, L(W, H) * 0.045, p.sub), T(c[2], W * 0.08, H * 0.16, W * 0.84, L(W, H) * 0.06, p.bg, { fontFamily: semi })]],
+  ["Spotlight", (W, H, p, c) => [E(W / 2 - L(W, H) * 0.42, H / 2 - L(W, H) * 0.42, L(W, H) * 0.84, L(W, H) * 0.84, p.acc), T(c[0], W * 0.08, H / 2 - hl(W, H, c[0].length) * 0.9, W * 0.84, hl(W, H, c[0].length), p.txt, { fontFamily: bold, align: "middle" }), T(c[1], W * 0.08, H / 2 + hl(W, H, c[0].length) * 0.5, W * 0.84, L(W, H) * 0.045, p.sub, { align: "middle" }), T(c[2].toUpperCase(), W * 0.08, H * 0.88, W * 0.84, L(W, H) * 0.04, p.pri, { align: "middle", fontFamily: bold, letterSpacing: 4 })]],
+  ["Frame", (W, H, p, c) => [R(L(W, H) * 0.05, L(W, H) * 0.05, W - L(W, H) * 0.1, H - L(W, H) * 0.1, p.bg, { stroke: p.pri, strokeWidth: L(W, H) * 0.012 }), T(c[0], W * 0.1, H * 0.36, W * 0.8, hl(W, H, c[0].length) * 0.9, p.txt, { fontFamily: "Playfair-700", align: "middle" }), R(W / 2 - W * 0.08, H * 0.36 + hl(W, H, c[0].length) * 1.3, W * 0.16, L(W, H) * 0.006, p.pri), T(c[1], W * 0.1, H * 0.36 + hl(W, H, c[0].length) * 1.6, W * 0.8, L(W, H) * 0.042, p.sub, { align: "middle" }), T(c[2], W * 0.1, H * 0.82, W * 0.8, L(W, H) * 0.04, p.pri, { align: "middle", fontFamily: semi })]],
+  ["Band", (W, H, p, c) => [R(-W * 0.2, H * 0.3, W * 1.4, H * 0.32, p.pri, { rotation: -8 }), T(c[0], W * 0.08, H * 0.38, W * 0.84, hl(W, H, c[0].length), p.bg, { fontFamily: bold, rotation: -8 }), T(c[1], W * 0.08, H * 0.74, W * 0.84, L(W, H) * 0.045, p.txt), R(W * 0.08, H * 0.84, W * 0.4, L(W, H) * 0.09, p.txt, { radius: L(W, H) * 0.045 }), T(c[2], W * 0.1, H * 0.84 + L(W, H) * 0.022, W * 0.36, L(W, H) * 0.038, p.bg, { fontFamily: semi, align: "middle" })]],
+  ["Card", (W, H, p, c) => [R(0, 0, W, H, p.pri, { gradient: { type: "linear", from: p.pri, to: p.txt, angle: 60 } }), R(W * 0.08, H * 0.14, W * 0.84, H * 0.72, p.bg, { radius: L(W, H) * 0.05, shadow: { dx: 0, dy: L(W, H) * 0.02, blur: L(W, H) * 0.04, color: "#000000", opacity: 0.25 } }), T(c[0], W * 0.14, H * 0.3, W * 0.72, hl(W, H, c[0].length) * 0.85, p.txt, { fontFamily: bold }), T(c[1], W * 0.14, H * 0.3 + hl(W, H, c[0].length) * 1.3, W * 0.72, L(W, H) * 0.042, p.sub), T(c[2], W * 0.14, H * 0.74, W * 0.72, L(W, H) * 0.045, p.pri, { fontFamily: bold })]],
+  ["Stripe", (W, H, p, c) => [R(0, 0, W * 0.06, H, p.pri), R(W * 0.06, 0, W * 0.015, H, p.acc), T(c[2].toUpperCase(), W * 0.14, H * 0.12, W * 0.78, L(W, H) * 0.035, p.pri, { fontFamily: bold, letterSpacing: 6 }), T(c[0], W * 0.14, H * 0.3, W * 0.78, hl(W, H, c[0].length), p.txt, { fontFamily: bold }), T(c[1], W * 0.14, H * 0.3 + hl(W, H, c[0].length) * 1.5, W * 0.78, L(W, H) * 0.045, p.sub)]],
+  ["Dots", (W, H, p, c) => [...Array.from({ length: 24 }).map((_, i) => E(W * 0.62 + (i % 6) * L(W, H) * 0.06, H * 0.06 + Math.floor(i / 6) * L(W, H) * 0.06, L(W, H) * 0.025, L(W, H) * 0.025, p.pri, { opacity: 0.6, name: "Dot" })), T(c[0], W * 0.08, H * 0.45, W * 0.84, hl(W, H, c[0].length), p.txt, { fontFamily: bold }), T(c[1], W * 0.08, H * 0.45 + hl(W, H, c[0].length) * 1.5, W * 0.84, L(W, H) * 0.045, p.sub), T(c[2], W * 0.08, H * 0.85, W * 0.84, L(W, H) * 0.045, p.pri, { fontFamily: semi })]],
+  ["Badge", (W, H, p, c) => [R(0, 0, W, H, p.bg, { gradient: { type: "radial", from: p.acc, to: p.bg, angle: 0 } }), newLayer("star", { x: W * 0.72, y: H * 0.06, w: L(W, H) * 0.22, h: L(W, H) * 0.22, fill: p.pri, sides: 12, innerRatio: 0.8, name: "Badge" }), T(c[2], W * 0.72, H * 0.06 + L(W, H) * 0.085, L(W, H) * 0.22, L(W, H) * 0.035, p.bg, { fontFamily: bold, align: "middle" }), T(c[0], W * 0.08, H * 0.42, W * 0.84, hl(W, H, c[0].length), p.txt, { fontFamily: bold }), T(c[1], W * 0.08, H * 0.42 + hl(W, H, c[0].length) * 1.5, W * 0.84, L(W, H) * 0.045, p.sub)]],
+];
+for (let i = 0; templates.length < TEMPLATE_COUNT; i++) {
+  const c = cats[i % cats.length], li = Math.floor(i / cats.length) % layouts.length, pi = Math.floor(i / (cats.length * layouts.length)) % pals.length;
+  const [ln, lf] = layouts[li]; const pal = pals[pi]; const copy = c.copy[(li + pi) % c.copy.length];
+  templates.push({ id: `g-${i}`, name: `${c.name} · ${ln} ${pal.name}`, category: c.cat, w: c.w, h: c.h, kind: c.kind, pages: () => [newPage(c.name, pal.bg, lf(c.w, c.h, pal, copy))] });
+}
+
+export const templateCategories = Array.from(new Set(templates.map((t) => t.category)));

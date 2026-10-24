@@ -16,7 +16,7 @@ PM-04|Named snapshots, version restore, diff|History|Tested|
 PM-05|Project integrity scanner & repair-into-copy|Reliability|Implemented|
 PM-06|Portable project package export|Export|Tested|JSON package; import via Settings → Restore
 CR-01|Universal Design Creator with presets & custom sizes (px/mm/in, dpi)|Create|Tested|
-TP-01|Bundled original editable templates (24)|Templates|Tested|24 bundled, not 10,000
+TP-01|Bundled original editable templates (999)|Templates|Implemented|24 hand-built + 975 generated from 12 formats × 8 layouts × 12 palettes; all objects editable
 TP-02|Template categories, search, favourites, recent|Templates|Tested|
 TP-03|Template pack import|Templates|Planned|
 ED-01|Canvas with layers: text, shapes, images, QR, chart, table, note, path|Editor|Tested|

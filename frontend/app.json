@@ -13,7 +13,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Capture photos and videos for your designs",
         "NSPhotoLibraryUsageDescription": "Place your photos into designs and edits",
-        "NSMicrophoneUsageDescription": "Record sound with videos for your projects"
+        "NSMicrophoneUsageDescription": "Record sound with videos for your projects",
+        "NSPhotoLibraryAddUsageDescription": "Save your exported designs to Photos"
       }
     },
     "android": {
@@ -51,7 +52,15 @@
       "@react-native-vector-icons/ionicons",
       "expo-video",
       "expo-image-picker",
-      "expo-document-picker"
+      "expo-document-picker",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Save your exported designs to Photos",
+          "savePhotosPermission": "Save your exported designs to Photos",
+          "isAccessMediaLocationEnabled": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

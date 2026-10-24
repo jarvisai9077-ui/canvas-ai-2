@@ -38,12 +38,12 @@ export default function Templates() {
       <View style={{ paddingTop: insets.top + 8, backgroundColor: colors.glassStrong, borderBottomWidth: 1, borderBottomColor: colors.divider }}>
         <View style={{ paddingHorizontal: spacing.md }}>
           <T v="h1">Templates</T>
-          <T v="muted">{templates.length} original bundled templates · every object stays editable</T>
+          <T v="muted" testID="templates-count">{templates.length} original bundled templates · every object stays editable</T>
           <View style={{ marginTop: 8 }}><Input value={q} onChangeText={setQ} placeholder="Search templates" testID="templates-search-input" /></View>
         </View>
         <ChipRow>{["All", "Favourites", "Recent", ...templateCategories].map((c) => <Chip key={c} label={c} active={cat === c} onPress={() => setCat(c)} testID={`templates-cat-${c.toLowerCase().replace(/ /g, "-")}`} />)}</ChipRow>
       </View>
-      <FlatList data={data} key={cols} numColumns={cols} keyExtractor={(t) => t.id} columnWrapperStyle={{ gap: 12 }} contentContainerStyle={{ padding: spacing.md, gap: 12, paddingBottom: bottom + 24 }}
+      <FlatList data={data} key={cols} initialNumToRender={6} maxToRenderPerBatch={6} windowSize={5} removeClippedSubviews numColumns={cols} keyExtractor={(t) => t.id} columnWrapperStyle={{ gap: 12 }} contentContainerStyle={{ padding: spacing.md, gap: 12, paddingBottom: bottom + 24 }}
         ListEmptyComponent={<T v="muted" style={{ textAlign: "center", marginTop: 40 }}>No templates match.</T>}
         renderItem={({ item }) => (
           <Pressable onPress={() => setPreview(item.id)} testID={`template-card-${item.id}`} style={({ pressed }) => ({ width: cw, padding: 8, borderRadius: radius.lg, backgroundColor: colors.surfaceSecondary, borderWidth: 1, borderColor: colors.border, opacity: pressed ? 0.85 : 1 })}>

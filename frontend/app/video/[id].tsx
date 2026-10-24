@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Badge, Btn, Chip, ChipRow, Empty, Header, IconBtn, Input, Section, Slider, T } from "@/src/components/ui";
-import { fileName, writeText } from "@/src/engine/exporter";
+import { fileName, share, writeText } from "@/src/engine/exporter";
 import { pickFiles, pickFromGallery } from "@/src/engine/media";
 import { getProject, saveProject, toast, uid } from "@/src/engine/store";
 import type { Clip, TextOverlay, Timeline } from "@/src/engine/types";
@@ -123,7 +123,7 @@ export default function VideoStudio() {
         <Section title="Export">
           <View style={{ paddingHorizontal: spacing.md, gap: 8 }}>
             <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}><Badge text="Limitation" tone="warning" /><T v="small" style={{ flex: 1 }}>MP4 rendering needs an on-device encoder that this build does not include, so no video file is produced. You can export the edit decision list.</T></View>
-            <Btn kind="secondary" label="Export edit decision list (JSON)" icon="document" onPress={async () => { const r = await writeText(p, JSON.stringify({ app: "RF Canvas", type: "edl", aspect: tl.aspect, duration: total, clips: clips.map((c) => ({ name: c.name, in: c.in, out: c.out, speed: c.speed, volume: c.muted ? 0 : c.volume })), titles: tl.texts, markers: tl.markers }, null, 2), "json", fileName("{name}_edl_{date}", p, "json")); toast(r.message, r.valid ? "success" : "error"); }} testID="video-export-edl" />
+            <Btn kind="secondary" label="Export edit decision list (JSON)" icon="document" onPress={async () => { const r = await writeText(p, JSON.stringify({ app: "RF Canvas", type: "edl", aspect: tl.aspect, duration: total, clips: clips.map((c) => ({ name: c.name, in: c.in, out: c.out, speed: c.speed, volume: c.muted ? 0 : c.volume })), titles: tl.texts, markers: tl.markers }, null, 2), "json", fileName("{name}_edl_{date}", p, "json")); toast(r.message, r.valid ? "success" : "error"); if (r.valid && r.uri.startsWith("file")) await share(r.uri).catch(() => toast("Sharing failed", "error")); }} testID="video-export-edl" />
           </View>
         </Section>
       </ScrollView>
